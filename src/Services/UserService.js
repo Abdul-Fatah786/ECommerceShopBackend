@@ -3,7 +3,7 @@ const UserModel = require("../Model/UserModel.js");
 module.exports.createUser = async ({ fullname, email, phoneNo, password, role = "customer", otp }) => {
     try {
         if (!fullname || !email || !password || !phoneNo) {
-            throw new error("Al fields are required");
+            throw new Error("All fields are required");
         };
 
 
@@ -36,6 +36,6 @@ module.exports.createUser = async ({ fullname, email, phoneNo, password, role = 
         return user
 
     } catch (error) {
-        throw new error(error.message || "User Creation failed");
+        throw new Error(error.message || "User Creation failed");
     }
 };

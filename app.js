@@ -4,39 +4,34 @@ dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const path = require("path");
-const fs = require("fs");
 
 const app = express();
 
 const debugMiddleware = (req, res, next) => {
-    console.log("Request Path", req.path)
+    console.log("Request Path:", req.path);
+    next();
 };
-
 const connectToDB = require("./src/db/db.js");
-
-
+const UserRoutes = require("./src/Routes/UserRoutes.js");
 
 const corsOptions = {
     origin: "*",
     optionsSuccessStatus: 200,
-    Credentials: true
+    credentials: true
 };
 
 app.use(debugMiddleware);
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser);
+app.use(cookieParser());
 
-app.use("/", (req, res) => {
-    res.send("Hello World !")
-});
-
-
+// Health Route
+app.get("/", (_, res) => {
+    res.json({ message: "Welcome to ECommerceShop Backend." })
+})
+app.use("/users", UserRoutes)
 
 connectToDB();
-
-
 
 module.exports = app;

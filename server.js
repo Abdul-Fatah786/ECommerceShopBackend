@@ -8,10 +8,6 @@ const app = require("./app")
 
 const server = http.createServer(app)
 
-app.get("/", (_, res) => {
-    res.json({ message: "Welcome to ECommerceShop Backend." })
-})
-
 server.listen(Port, (err) => {
     if (err) {
         console.error("Error starting server : ", err)
