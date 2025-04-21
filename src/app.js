@@ -11,8 +11,9 @@ const debugMiddleware = (req, res, next) => {
     console.log("Request Path:", req.path);
     next();
 };
-const connectToDB = require("./src/db/db.js");
-const UserRoutes = require("./src/Routes/UserRoutes.js");
+const connectToDB = require("./db/db.js");
+const UserRoutes = require("./Routes/UserRoutes.js");
+const ProductRoutes = require("./Routes/ProductRoutes.js");
 
 const corsOptions = {
     origin: "*",
@@ -31,6 +32,7 @@ app.get("/", (_, res) => {
     res.json({ message: "Welcome to ECommerceShop Backend." })
 })
 app.use("/users", UserRoutes)
+app.use("/products", ProductRoutes);
 
 connectToDB();
 
