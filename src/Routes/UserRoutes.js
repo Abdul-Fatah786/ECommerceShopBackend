@@ -7,29 +7,16 @@ const {
     verifyUser,
     forgotPassword
 } = require("../Controller/UserController.js");
+const {
+    userValidationRegister,
+    userValidationLogin,
+    forgotPasswordValidation
+} = require("../middleware/UserMiddleware.js");
 
 
-router.post("/register", [
-    body("email").isEmail().withMessage("Inavlid Email"),
-    body("fullname")
-        .isLength({ min: 3 })
-        .withMessage("Full name must be 3 character long"),
-    body("password")
-        .isLength({ min: 3 })
-        .withMessage("Password must be 3 charactrs long")
-], registerUser);
-
-router.post("/login", [
-    body("email").isEmail().withMessage("Inavlid Email"),
-    body("password")
-        .isLength({ min: 3 })
-        .withMessage("Password must be 3 charactrs long")
-
-], loginUser)
-
+router.post("/register", userValidationRegister, registerUser);
+router.post("/login", userValidationLogin, loginUser)
 router.post("/verify", verifyUser)
-router.post("/forgot-password", [
-    body("email").isEmail().withMessage("Invalid Email")
-], forgotPassword)
+router.post("/forgot-password", forgotPasswordValidation, forgotPassword)
 
 module.exports = router
