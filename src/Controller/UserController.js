@@ -135,9 +135,19 @@ const forgotPassword = async (req, res, next) => {
     }
 }
 
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await UserModel.find()
+        return res.json(users)
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
+
 module.exports = {
     registerUser,
     verifyUser,
     loginUser,
-    forgotPassword
+    forgotPassword,
+    getAllUsers
 }
