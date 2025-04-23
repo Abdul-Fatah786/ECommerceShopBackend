@@ -8,6 +8,7 @@ const {
 } = require("../Controller/WishlistController.js");
 
 router
+    .get("/", getAllWishlist)
     .post("/", createWishlist)
     .get("/:userId", getByUserID)
     .patch("/:userId/:productId", updateByUserID)
