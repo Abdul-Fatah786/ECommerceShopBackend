@@ -4,12 +4,12 @@ const wishlistSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        require: true
+        required: true
     },
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
-        require: true
+        required: true
     },
     note: {
         type: String,

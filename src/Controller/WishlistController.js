@@ -1,4 +1,6 @@
 const wishlistModel = require("../Model/WishlistModel.js");
+const UserModel = require("../Model/UserModel.js");
+const ProductModel = require("../Model/ProductModel.js");
 
 const getAllWishlist = async (req, res) => {
     try {
