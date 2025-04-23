@@ -4,10 +4,12 @@ const {
     createWishlist,
     getByUserID,
     updateByUserID,
-    deleteByUserID
+    deleteByUserID,
+    getAllWishlist
 } = require("../Controller/WishlistController.js");
 
 router
+    .get("/", getAllWishlist)
     .post("/", createWishlist)
     .get("/:userId", getByUserID)
     .patch("/:userId/:productId", updateByUserID)
