@@ -1,5 +1,14 @@
 const wishlistModel = require("../Model/WishlistModel.js");
 
+const getAllWishlist = async (req, res) => {
+    try {
+        const allWishList = await wishlistModel.find().populate('user').populate('product')
+        res.status(200).json({ AllWishList: allWishList })
+    } catch (error) {
+        res.status(500).json({ message: "Error Fetching all Wishlist" })
+    }
+}
+
 const createWishlist = async (req, res) => {
     try {
         const wishlist = await wishlistModel(req.body)
@@ -55,5 +64,6 @@ module.exports = {
     createWishlist,
     getByUserID,
     updateByUserID,
-    deleteByUserID
+    deleteByUserID,
+    getAllWishlist
 }
