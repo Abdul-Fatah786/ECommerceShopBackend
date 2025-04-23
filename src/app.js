@@ -11,6 +11,7 @@ const debugMiddleware = (req, res, next) => {
     console.log("Request Path:", req.path);
     next();
 };
+
 const connectToDB = require("./db/db.js");
 const UserRoutes = require("./Routes/UserRoutes.js");
 const ProductRoutes = require("./Routes/ProductRoutes.js");
@@ -32,10 +33,12 @@ app.use(cookieParser());
 app.get("/", (_, res) => {
     res.json({ message: "Welcome to ECommerceShop Backend." })
 })
+
 app.use("/users", UserRoutes)
 app.use("/products", ProductRoutes);
 app.use("/wishlist", WishlistRoutes);
 
+// connect to DB 
 connectToDB();
 
 module.exports = app;
