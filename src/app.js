@@ -16,6 +16,7 @@ const connectToDB = require("./db/db.js");
 const UserRoutes = require("./Routes/UserRoutes.js");
 const ProductRoutes = require("./Routes/ProductRoutes.js");
 const WishlistRoutes = require("./Routes/WishlistRoutes.js");
+const CartRoutes = require("./Routes/CartRoutes.js");
 
 const corsOptions = {
     origin: "*",
@@ -37,6 +38,7 @@ app.get("/", (_, res) => {
 app.use("/users", UserRoutes)
 app.use("/products", ProductRoutes);
 app.use("/wishlist", WishlistRoutes);
+app.use("/cart", CartRoutes);
 
 // connect to DB 
 connectToDB();

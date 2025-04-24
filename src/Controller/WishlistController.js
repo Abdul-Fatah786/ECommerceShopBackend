@@ -13,11 +13,18 @@ const getAllWishlist = async (req, res) => {
 
 const createWishlist = async (req, res) => {
     try {
-        const wishlist = await wishlistModel(req.body)
-        await wishlist.save()
-        const populatedWishlist = await wishlist.populate("user").populate("product")
-        res.status(201).json({ message: "Product Added to wihslist", wishlist: populatedWishlist })
+        const wishlist = new wishlistModel(req.body); 
+        await wishlist.save();
+        const populatedWishlist = await wishlistModel
+            .findById(wishlist._id)
+            .populate("user")
+            .populate("product");
+        res.status(201).json({
+            message: "Product Added to wishlist",
+            wishlist: populatedWishlist
+        });
     } catch (error) {
+        console.error("Wishlist Error:", error);
         res.status(500).json({ message: "Error adding product to wishlist, please try again later" })
     }
 }
