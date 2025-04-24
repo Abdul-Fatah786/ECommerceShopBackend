@@ -14,7 +14,5 @@ router
     .get('/:userId', getByUserID)
     .put('/:userId/:productId', updateByUserID)
     .delete('/:userId/:productId', deleteByUserID)
-    .get('/:userId/:productId', getByUserID)
-
 
 module.exports = router;
