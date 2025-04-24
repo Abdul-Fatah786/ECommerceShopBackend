@@ -14,10 +14,10 @@ const {
 } = require("../middleware/UserMiddleware.js");
 
 
+router.get("/", getAllUsers);
 router.post("/register", userValidationRegister, registerUser);
 router.post("/login", userValidationLogin, loginUser)
 router.post("/verify", verifyUser)
 router.post("/forgot-password", forgotPasswordValidation, forgotPassword)
-router.get("/getAllUsers", getAllUsers);
 
 module.exports = router
