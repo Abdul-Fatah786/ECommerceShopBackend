@@ -7,37 +7,35 @@ const randomString = require("../utils/randomString.js");
 const TokenBlacklist = require("../Model/TokenBlacklist.js");
 
 const registerUser = async (req, res, next) => {
-    const registerUser = async (req, res, next) => {
-        try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-            const { fullname, email, phoneNo, password, role } = req.body;
+        const { fullname, email, phoneNo, password, role } = req.body;
 
-            const otp = Math.floor(100000 + Math.random() * 900000);
+        const otp = Math.floor(100000 + Math.random() * 900000);
 
-            const newUser = await UserServices.createUser({
-                fullname,
-                email,
-                phoneNo,
-                password,
-                role: role || "customer",
-                otp: otp,  // Only pass the OTP code here      
-            });
+        const newUser = await UserServices.createUser({
+            fullname,
+            email,
+            phoneNo,
+            password,
+            role: role || "customer",
+            otp: otp,  // Only pass the OTP code here      
+        });
 
-            await OtpController.sendOtp(email, otp);
+        await OtpController.sendOtp(email, otp);
 
-            res.status(201).json({
-                message: "User registered successfully. OTP sent for verification",
-                userID: newUser._id
-            });
-        } catch (error) {
-            next(error);
-        };
+        res.status(201).json({
+            message: "User registered successfully. OTP sent for verification",
+            userID: newUser._id
+        });
+    } catch (error) {
+        next(error);
     };
-}
+};
 const verifyUser = async (req, res, next) => {
     try {
         const { email, otp } = req.body;
