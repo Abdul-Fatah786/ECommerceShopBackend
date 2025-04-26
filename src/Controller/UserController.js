@@ -1,8 +1,10 @@
+const jwt = require('jsonwebtoken');
 const UserModel = require("../Model/UserModel.js");
 const UserServices = require("../Services/UserService.js")
 const { validationResult } = require("express-validator")
 const OtpController = require("./OtpControler.js")
-const randomString = require("../utils/randomString.js")
+const randomString = require("../utils/randomString.js");
+const TokenBlacklist = require("../Model/TokenBlacklist.js");
 
 const registerUser = async (req, res, next) => {
     try {
@@ -116,6 +118,32 @@ const loginUser = async (req, res, next) => {
     }
 }
 
+const logoutUser = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ message: "Authorization token required" });
+        }
+        const token = authHeader.split(' ')[1];
+
+        // Verify token to get expiration time
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const expiresAt = new Date(decoded.exp * 1000);
+
+        try {
+            await TokenBlacklist.create({ token, expiresAt });
+        } catch (error) {
+            // Handle duplicate token entry
+            if (error.code === 11000) return res.status(200).json({ message: "Logout successful" });
+            throw error;
+        }
+
+        res.status(200).json({ message: "Logout successful. Token invalidated." });
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+}
+
 const forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -149,5 +177,6 @@ module.exports = {
     verifyUser,
     loginUser,
     forgotPassword,
-    getAllUsers
+    getAllUsers,
+    logoutUser,
 }
