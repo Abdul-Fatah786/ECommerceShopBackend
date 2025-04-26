@@ -10,9 +10,11 @@ const registerUser = async (req, res, next) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({
+                success: false,
+                errors: errors.array()
+            });
         }
-
         const { fullname, email, phoneNo, password, role } = req.body;
 
         const otp = Math.floor(100000 + Math.random() * 900000);
@@ -40,26 +42,32 @@ const verifyUser = async (req, res, next) => {
     try {
         const { email, otp } = req.body;
 
-        // find the user by email and retirive the OTP details
-        const user = await UserModel
-            .findOne({ email })
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and OTP are required"
+            });
+        }
+
+        const user = await UserModel.findOne({ email })
             .select("+otp.code +otp.expiresAt");
 
-        if (!user) return res.status(404).json({ message: "user not found" });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
 
-        // check if the OTP is expired
         if (user.otp.expiresAt < Date.now()) return res.status(400).json({
             message: "OTP expired. Please request a new one"
         });
 
-        // check if the OTP is not correct 
         if (user.otp.code !== otp) return res.status(400).json({ message: "invalid OTP" });
 
-        // update the user's status to active and mark OTP is verified 
         user.otp.verified = true;
         user.status = "active";
 
-        // save the user 
         await user.save();
 
         return res.status(200).json({
@@ -73,6 +81,7 @@ const verifyUser = async (req, res, next) => {
             }
         });
     } catch (error) {
+        console.error("Verification error:", error);
         next(error)
     }
 }
@@ -82,14 +91,22 @@ const loginUser = async (req, res, next) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({
+                success: false,
+                errors: errors.array()
+            });
         }
 
         const { email, password } = req.body;
 
         const user = await UserModel.findOne({ email }).select("+password");
 
-        if (!user) return res.status(401).json({ message: "invalid email or password" })
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials"
+            });
+        }
 
         const isMatch = await user.comparePassword(password);
 
@@ -121,25 +138,33 @@ const logoutUser = async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: "Authorization token required" });
+            return res.status(401).json({
+                success: false,
+                message: "Authorization token required"
+            });
         }
-        const token = authHeader.split(' ')[1];
 
-        // Verify token to get expiration time
+        const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const expiresAt = new Date(decoded.exp * 1000);
 
-        try {
-            await TokenBlacklist.create({ token, expiresAt });
-        } catch (error) {
-            // Handle duplicate token entry
-            if (error.code === 11000) return res.status(200).json({ message: "Logout successful" });
-            throw error;
+        const existingToken = await TokenBlacklist.findOne({ token });
+        if (existingToken) {
+            return res.status(200).json({
+                success: true,
+                message: "Already logged out"
+            });
         }
+        await TokenBlacklist.create({ token, expiresAt });
 
-        res.status(200).json({ message: "Logout successful. Token invalidated." });
+
+        res.status(200).json({
+            success: true,
+            message: "Logout successful"
+        });
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        console.error("Logout error:", error);
+        next(error);
     }
 }
 
