@@ -7,33 +7,61 @@ const randomString = require("../utils/randomString.js");
 const TokenBlacklist = require("../Model/TokenBlacklist.js");
 
 const registerUser = async (req, res, next) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const [passwordError, setPasswordError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            setPasswordError("Passwords do not match");
+            return;
         }
 
-        const { fullname, email, phoneNo, password, role } = req.body;
+        setIsSubmitting(true);
 
-        const otp = Math.floor(100000 + Math.random() * 900000);
+        const userData = {
+            fullname: formData.name,
+            email: formData.email,
+            phoneNo: formData.phone,
+            password: formData.password
+        };
 
-        const newUser = await UserServices.createUser({
-            fullname,
-            email,
-            phoneNo,
-            password,
-            role: role || "customer",
-            otp: otp,  // Only pass the OTP code here      
-        });
+        try {
+            const response = await axios.post('http://localhost:3001/users/register', userData);
 
-        await OtpController.sendOtp(email, otp);
-
-        res.status(201).json({
-            message: "User registered successfully. OTP sent for verification",
-            userID: newUser._id
-        });
-    } catch (error) {
-        next(error);
+            if (response.data.success) {
+                localStorage.setItem('userEmail', formData.email);
+                navigate('/verify-otp');
+            } else {
+                setPasswordError(response.data.message || 'Registration failed');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            let message = 'Registration failed';
+            if (error.response) {
+                // Server responded with a status code outside 2xx
+                message = error.response.data.message || error.response.data.error || message;
+            } else if (error.request) {
+                // Request was made but no response received
+                message = 'No response from server - check your connection';
+            } else {
+                // Other setup errors
+                message = error.message || message;
+            }
+            setPasswordError(message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 };
 
