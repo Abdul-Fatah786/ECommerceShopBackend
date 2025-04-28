@@ -16,8 +16,10 @@ const registerUser = async (req, res, next) => {
             });
         }
         const { fullname, email, phoneNo, password, role } = req.body;
+        console.log(fullname, email, phoneNo, password, role)
 
         const otp = Math.floor(100000 + Math.random() * 900000);
+        console.log("OTP generated:", otp);
 
         const newUser = await UserServices.createUser({
             fullname,
@@ -28,13 +30,15 @@ const registerUser = async (req, res, next) => {
             otp: otp,  // Only pass the OTP code here      
         });
 
-        await OtpController.sendOtp(email, otp);
+        const OTP = await OtpController.sendOtp(email, otp);
+        console.log("OTP sent:", OTP);
 
         res.status(201).json({
             message: "User registered successfully. OTP sent for verification",
             userID: newUser._id
         });
     } catch (error) {
+        console.error("Registration error:", error);
         next(error);
     };
 };
