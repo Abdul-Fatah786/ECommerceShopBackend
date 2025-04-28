@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const UserModel = require("../Model/UserModel.js");
 const UserServices = require("../Services/UserService.js")
 const { validationResult } = require("express-validator")
-const OtpController = require("./OtpControler.js")
+// const OtpController = require("./OtpControler.js")
 const randomString = require("../utils/randomString.js");
 const TokenBlacklist = require("../Model/TokenBlacklist.js");
 
@@ -18,8 +18,8 @@ const registerUser = async (req, res, next) => {
         const { fullname, email, phoneNo, password, role } = req.body;
         console.log(fullname, email, phoneNo, password, role)
 
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        console.log("OTP generated:", otp);
+        // const otp = Math.floor(100000 + Math.random() * 900000);
+        // console.log("OTP generated:", otp);
 
         const newUser = await UserServices.createUser({
             fullname,
@@ -27,11 +27,11 @@ const registerUser = async (req, res, next) => {
             phoneNo,
             password,
             role: role || "customer",
-            otp: otp,  // Only pass the OTP code here      
+            // otp: otp,  // Only pass the OTP code here      
         });
 
-        const OTP = await OtpController.sendOtp(email, otp);
-        console.log("OTP sent:", OTP);
+        // const OTP = await OtpController.sendOtp(email, otp);
+        // console.log("OTP sent:", OTP);
 
         res.status(201).json({
             message: "User registered successfully. OTP sent for verification",

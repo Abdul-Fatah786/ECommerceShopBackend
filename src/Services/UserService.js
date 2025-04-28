@@ -27,10 +27,10 @@ module.exports.createUser = async ({ fullname, email, phoneNo, password, role = 
             password: hashPassword,
             role,
             status: "inactive",
-            otp: {
-                code: otp.toString(),
-                expiresAt: otpExpiresAt
-            }
+            // otp: {
+                // code: otp.toString(),
+                // expiresAt: otpExpiresAt
+            // }
         });
 
         return user

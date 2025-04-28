@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const authenticate = require("../middleware/authenticate.js");
+// const authenticate = require("../middleware/authenticate.js");
 const {
     registerUser,
     loginUser,
-    verifyUser,
+    // verifyUser,
     forgotPassword,
     getAllUsers,
     logoutUser
@@ -31,7 +31,7 @@ body("password")
     .withMessage("Password must be 3 characters long")
 ], loginUser);
 router.post("/logout", logoutUser);
-router.post("/verify", authenticate, verifyUser);
+// router.post("/verify", authenticate, verifyUser);
 router.post("/forgot-password", [
     body("email").isEmail().withMessage("Invalid Email")
 ], forgotPassword);

@@ -36,14 +36,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: defaultImage,
     },
-    otp: {
-        verified: {
-            type: Boolean,
-            default: false,
-        },
-        code: String,
-        expiresAt: Date,
-    },
+    // otp: {
+    //     verified: {
+    //         type: Boolean,
+    //         default: false,
+    //     },
+    //     code: String,
+    //     expiresAt: Date,
+    // },
 
 }, { timestamps: true });
 
